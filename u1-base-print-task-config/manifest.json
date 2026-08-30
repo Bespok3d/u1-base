@@ -1,0 +1,81 @@
+{
+  "name": "u1-base-print-task-config",
+  "title": "U1 Base: print task config",
+  "version": "0.1.0",
+  "author": "bespoked",
+  "license": "https://github.com/Bespok3d/u1-base/blob/dev/u1-base-print-task-config/doc/LICENSE",
+  "description": "Part of the U1 Base Layer. On its own it changes nothing you can see: it opens two doors in the printer's print task settings so that other plugins can use them.\n\nWhat it opens:\n• A plugin can ask the printer to stop resetting pressure advance at the start of a print, and to let it go again afterwards. Several plugins can ask at the same time, and the reset comes back only once the last one has let go.\n• A plugin can allow FORCE=1 on SET_PRINT_PREFERENCES, so a preference can be changed while a print is running. With no plugin asking, the printer refuses mid print exactly as it does today.\n\nInstall this because a plugin you want asks for it. Under the hood it edits Klipper's own program files on the printer. Uninstalling puts the originals back, and it re-applies itself after a firmware update. Snapmaker U1 only.",
+  "tagline": "Opens the printer's print task settings to plugins. Alone it changes nothing.",
+  "category": "tuning",
+  "channel": "stable",
+  "printer_specific": true,
+  "changelog": "doc/CHANGELOG.md",
+  "published_at": "2026-08-22",
+  "updated_at": "2026-08-22",
+  "source": "https://github.com/Bespok3d/u1-base",
+  "homepage": null,
+  "publisher": "PLACEHOLDER",
+  "min_daemon_version": "0.14.2",
+  "provides": [
+    {
+      "service": "u1-base-print-task-config"
+    }
+  ],
+  "require": [
+    {
+      "service": "migrate-patch",
+      "cardinality": "one"
+    }
+  ],
+  "conflicts": [],
+  "requires": {
+    "capabilities": [
+      "klipper-generic"
+    ],
+    "variables": []
+  },
+  "permissions": [
+    "klipper-source",
+    "restart"
+  ],
+  "install": {
+    "instrument": [
+      {
+        "class": "klipper-source",
+        "name": "extras/print_task_config.py",
+        "variants": [
+          {
+            "when": {
+              "fw_min": "1.5.0"
+            },
+            "diff": "files/patches/print_task_config-v1.6.patch"
+          },
+          {
+            "when": {
+              "fw_min": "1.4.1"
+            },
+            "diff": "files/patches/print_task_config-v1.4.1.patch"
+          },
+          {
+            "when": {
+              "fw_min": "1.4.0"
+            },
+            "diff": "files/patches/print_task_config-v1.4.patch"
+          },
+          {
+            "when": {
+              "fw_min": "1.3.0"
+            },
+            "diff": "files/patches/print_task_config-v1.3.patch"
+          }
+        ]
+      }
+    ],
+    "restart": [
+      "klipper"
+    ]
+  },
+  "conflict_resolutions": [],
+  "files": [],
+  "attributions": "# Attributions - u1-base-print-task-config\n\n**Plugin author:** Bespok3d\n\nThe patch in this package is the Bespok3d project's own work. It is applied to Snapmaker's Klipper\nfork, which is GPL-3.0, so the patch is GPL-3.0-only as well.\n\nThe idea of a `FORCE` parameter that overrides the printer's mid-print refusal came from paxx12's\nExtended Firmware overlay `36-feature-print-preferences` (GPL-3.0). None of that overlay's code\nships here: the guard is expressed differently, through a registration a plugin holds, so that\nmore than one plugin can ask for it at once. The credit is for the idea, and it is recorded here\nbecause this is where the change to Snapmaker's file now lives.\n\n| Upstream project | Author | Licence | Needed at runtime | Code ships in this package |\n| --- | --- | --- | --- | --- |\n| Snapmaker's Klipper fork | Snapmaker and the Klipper contributors | GPL-3.0 | yes | no |\n\n"
+}

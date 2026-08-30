@@ -1,0 +1,27 @@
+From 352a5bac393d53f90e1496ed71330fdc37365a7e Mon Sep 17 00:00:00 2001
+From: Dmitry Butyugin <dmbutyugin@google.com>
+Date: Fri, 6 Dec 2024 11:54:26 +0900
+Subject: [PATCH] resonance_tester: Added a new sweeping_vibrations resonance
+ test method (#6723)
+
+This adds a new resonance test method that can help if a user has some mechanical problems with the printer.
+
+Signed-off-by: Dmitry Butyugin <dmbutyugin@google.com>
+
+Modified by the Bespok3d project on 2026-07-28: split out of 04_16b4b6b30.patch; this part carries only the klippy/extras/shaper_calibrate.py change.
+---
+diff --git a/klippy/extras/shaper_calibrate.py b/klippy/extras/shaper_calibrate.py
+index 2830be6b7..dd69efb20 100644
+--- a/klippy/extras/shaper_calibrate.py
++++ b/klippy/extras/shaper_calibrate.py
+@@ -48,7 +48,9 @@ class CalibrationData:
+             # Avoid division by zero errors
+             psd /= self.freq_bins + .1
+             # Remove low-frequency noise
+-            psd[self.freq_bins < MIN_FREQ] = 0.
++            low_freqs = self.freq_bins < 2. * MIN_FREQ
++            psd[low_freqs] *= self.numpy.exp(
++                    -(2. * MIN_FREQ / (self.freq_bins[low_freqs] + .1))**2 + 1.)
+     def get_psd(self, axis='all'):
+         return self._psd_map[axis]
+ 

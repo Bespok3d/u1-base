@@ -1,0 +1,94 @@
+{
+  "what": "The patch fragments the released plugins actually shipped, copied out of their own release tags.",
+  "why_vendored": "A migration proof has to run against what a field printer carries, and this repo gates without a sibling checkout.",
+  "releases": [
+    {
+      "plugin": "klipper-motion",
+      "version": "0.1.3",
+      "repo": "plugins/u1-motion-tweaks",
+      "tag": "plugin-klipper-motion-v0.1.3",
+      "released_patch_dir": "klipper-motion/files/patches",
+      "sha256": {
+        "01_resonance_chip_fix.patch": "386f36fbe02c63bf376c9e13b3d27d6038164cbf9fe38d3c07743fe797deba9d",
+        "02_toolhead_centripetal.patch": "3af051464e2df91f98445ec811875096818b0529829f6257970d58038afe3728",
+        "03_toolhead_junction.patch": "8508e3a8dfcc6d6aef9303a6ae44de9249ee1f58419a82d1a487e9abffb6c80a",
+        "04a_resonance_sweeping.patch": "197a27d8ca74ada6e60b80c0d328fb738c01f47e2ef7f005d08e3eefe11b1f53",
+        "04b_shaper_calibrate.patch": "74f1e0d1e3062f96953b72bcd11f963d7dd812b670a2ec59d020cc131ddc0dbe",
+        "04c_toolhead_junction_v2.patch": "8d826ec88c7fa01176d92d4cd95a63e23d269461268aa227a6854471bcf52024",
+        "05_toolhead_lookahead.patch": "bbccc9d1a62881f6eca640ac9a6d4200c07c136a5cf0a1e37823dc284dbd0244",
+        "06_resonance_snapmaker_fix.patch": "3d09f3d8e210e27bd2b40b60dc2ac05d98a6517b63f2b6a68aafe5683c89a7ee"
+      },
+      "instrument": [
+        {
+          "name": "extras/resonance_tester.py",
+          "fragment": "01_resonance_chip_fix.patch"
+        },
+        {
+          "name": "toolhead.py",
+          "fragment": "02_toolhead_centripetal.patch"
+        },
+        {
+          "name": "toolhead.py",
+          "fragment": "03_toolhead_junction.patch"
+        },
+        {
+          "name": "extras/resonance_tester.py",
+          "fragment": "04a_resonance_sweeping.patch"
+        },
+        {
+          "name": "extras/shaper_calibrate.py",
+          "fragment": "04b_shaper_calibrate.patch"
+        },
+        {
+          "name": "toolhead.py",
+          "fragment": "04c_toolhead_junction_v2.patch"
+        },
+        {
+          "name": "toolhead.py",
+          "fragment": "05_toolhead_lookahead.patch"
+        },
+        {
+          "name": "extras/resonance_tester.py",
+          "fragment": "06_resonance_snapmaker_fix.patch"
+        }
+      ]
+    },
+    {
+      "plugin": "print-prefs-core",
+      "version": "0.1.1",
+      "repo": "plugins/u1-force-macros",
+      "tag": "plugin-print-prefs-core-v0.1.1",
+      "released_patch_dir": "print-prefs-core/files/patches",
+      "sha256": {
+        "force-guard.patch": "694f64a5878e0e32fac1bb03dc8260b0af8085a00e3441536f2fafb2b1a2169a"
+      },
+      "instrument": [
+        {
+          "name": "extras/print_task_config.py",
+          "fragment": "force-guard.patch"
+        }
+      ]
+    },
+    {
+      "plugin": "rfid-ntag",
+      "version": "0.1.12",
+      "repo": "plugins/u1-enhanced-rfid",
+      "tag": "plugin-rfid-ntag-v0.1.12",
+      "released_patch_dir": "rfid-ntag/files/rfid-base/patches",
+      "sha256": {
+        "filament_detect-v1.4.246.patch": "820424ecb825611ec71e81ffe962644e9d1dd20b9210be09c836639da0ea805e",
+        "fm175xx_reader-v1.4.246.patch": "297eb55f75d5ba0549be21106036d79a5fa3c3c81e684f45ad3ffe117f1b71bc"
+      },
+      "instrument": [
+        {
+          "name": "extras/fm175xx_reader.py",
+          "fragment": "fm175xx_reader-v1.4.246.patch"
+        },
+        {
+          "name": "extras/filament_detect.py",
+          "fragment": "filament_detect-v1.4.246.patch"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+--- a/klippy/extras/print_task_config.py
++++ b/klippy/extras/print_task_config.py
+@@ -109,6 +109,8 @@
+         self.reset_print_info()
+ 
+         self.gcode = self.printer.lookup_object('gcode')
++        self._pressure_advance_reset_suppressed_by = set()
++        self._force_preference_param_allowed_by = set()
+         self.gcode.register_command(
+             "SET_PRINT_EXTRUDER_MAP", self.cmd_SET_PRINT_EXTRUDER_MAP)
+         self.gcode.register_command(
+@@ -146,7 +148,22 @@
+ 
+         self._update_filament_flags_times = 10
+         self._update_filament_flags_timer = self.reactor.register_timer(self._update_filament_flags_timer_handle)
++
++    def suppress_pressure_advance_reset(self, owner):
++        self._pressure_advance_reset_suppressed_by.add(owner)
++
++    def resume_pressure_advance_reset(self, owner):
++        self._pressure_advance_reset_suppressed_by.discard(owner)
++
++    def allow_force_preference_param(self, owner):
++        self._force_preference_param_allowed_by.add(owner)
+ 
++    def disallow_force_preference_param(self, owner):
++        self._force_preference_param_allowed_by.discard(owner)
++
++    def _force_preference_honoured(self, gcmd):
++        return bool(self._force_preference_param_allowed_by) and gcmd.get_int('FORCE', 0) == 1
++
+     def _handle_set_print_preferences(self, web_request):
+         tmp_print_task_config = copy.deepcopy(self.print_task_config)
+ 
+@@ -388,7 +405,11 @@
+         self.update_filament_flags()
+ 
+         # do not use run_script_from_command api
+-        self.gcode.run_script(f"FLOW_RESET_K EXTRUDER={channel}\r\n")
++        if self._pressure_advance_reset_suppressed_by:
++            logging.info("print_task_config: pressure advance reset skipped, suppressed by %s",
++                         sorted(self._pressure_advance_reset_suppressed_by))
++        else:
++            self.gcode.run_script(f"FLOW_RESET_K EXTRUDER={channel}\r\n")
+ 
+     def get_extruder_map_table(self):
+         return self.print_task_config['extruder_map_table']
+@@ -706,7 +727,11 @@
+                     self.print_task_config, DEFAULT_PRINT_TASK_CONFIG):
+                 logging.error("[print_task_config] save print_task_config failed\r\n")
+ 
+-            self.gcode.run_script_from_command(f"FLOW_RESET_K EXTRUDER={config_extruder}\r\n")
++            if self._pressure_advance_reset_suppressed_by:
++                logging.info("print_task_config: pressure advance reset skipped, suppressed by %s",
++                             sorted(self._pressure_advance_reset_suppressed_by))
++            else:
++                self.gcode.run_script_from_command(f"FLOW_RESET_K EXTRUDER={config_extruder}\r\n")
+ 
+         except Exception as e:
+             raise gcmd.error(str(e))
+@@ -726,7 +751,7 @@
+         logging.info("[print_task_config] SET_PRINT_PREFERENCES %s", gcmd.get_raw_command_parameters())
+ 
+         print_stats = self.printer.lookup_object('print_stats', None)
+-        if print_stats is not None and print_stats.state in ['printing', 'paused']:
++        if print_stats is not None and print_stats.state in ['printing', 'paused'] and not self._force_preference_honoured(gcmd):
+             if bed_level is not None or flow_calibrate is not None or shaper_calibrate is not None or \
+                     time_lapse_camera is not None or end_unload_filament is not None:
+                 raise gcmd.error(
+@@ -884,7 +909,11 @@
+                             self.print_task_config, DEFAULT_PRINT_TASK_CONFIG):
+                         logging.error("[print_task_config] save print_task_config failed\r\n")
+ 
+-                    self.gcode.run_script_from_command(f"FLOW_RESET_K EXTRUDER={extruder_index}\r\n")
++                    if self._pressure_advance_reset_suppressed_by:
++                        logging.info("print_task_config: pressure advance reset skipped, suppressed by %s",
++                                     sorted(self._pressure_advance_reset_suppressed_by))
++                    else:
++                        self.gcode.run_script_from_command(f"FLOW_RESET_K EXTRUDER={extruder_index}\r\n")
+ 
+             except Exception as e:
+                 logging.error("[print_task_config] INNER_CHECK_AND_RELOAD_FILAMENT_INFO error: %s", str(e))

@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: Copyright (C) 2026 unlucio and the Bespok3d contributors
+# SPDX-License-Identifier: GPL-3.0-only
+name: pr-build
+
+# Build, test, pack, and index every plugin in this repo WITHOUT publishing, so a pull request or a
+# branch push gets a downloadable preview of exactly what would ship. Same pipeline as release, driven
+# by the one reusable Bespok3d build Action (b3-builder) with publish: 'false': it still builds the bake
+# payloads, packs the .b3 set, assembles the sub-list index, and runs each plugin's tests, but cuts no
+# GitHub release and registers nothing in the main index. The produced .b3 (plus atoms and the assembled
+# index.json) upload as a run artifact, downloadable from the PR's Checks tab and the Actions run page.
+# Publishing stays main-only, in release.yml.
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+    paths:
+      - '*/manifest.json'
+      - '*/files/**'
+      - '*/doc/**'
+      - '*/src/**'
+      - '*/toolchain/**'
+      - '*/tests/**'
+      - .github/workflows/pr-build.yml
+
+# A branch push and the pull_request for the same head would otherwise build twice; collapse them into
+# one run per head branch and cancel a superseded build when a newer commit lands.
+concurrency:
+  group: pr-build-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read  # checkout only: no release, no index commit, no comment (see pr-build-comment.yml)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Bespok3d/b3-builder@5abdeb52902b6096c59134afcf52a479e6588e71  # main @ 2026-08-06
+        with:
+          unit: repo
+          bake: 'true'
+          publish: 'false'
+          atom-repo: ${{ github.repository }}
+          list-name: 'U1 Extras'
+          list-publisher: 'PLACEHOLDER'
+          list-ref-name: 'U1 Extras'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: b3-packages-${{ github.event.repository.name }}
+          path: |
+            dist/*.b3
+            dist/*.atom.json
+            dist/index.json
+          if-no-files-found: error
+
+      # A pull request FROM A FORK gets a read-only token whatever this workflow asks for, so this job
+      # cannot post the comment that links the build: the attempt fails and the contributor sees a red
+      # check on a build that passed. It records the pull request number instead, and
+      # pr-build-comment.yml posts the link from this repo, where the token can write. The number has
+      # to travel as an artifact: a workflow_run started by a fork's pull request carries an empty
+      # pull_requests list, so a follow-up run has no other way to learn which pull request it was.
+      - name: record the PR number for the comment workflow
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: printf '%s' "$PR_NUMBER" > "$RUNNER_TEMP/pr-number.txt"
+
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
+        with:
+          name: pr-number
+          path: ${{ runner.temp }}/pr-number.txt
+          if-no-files-found: error

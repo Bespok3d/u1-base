@@ -1,0 +1,87 @@
+{
+  "name": "u1-base-resonance-tester",
+  "title": "U1 Base: resonance tester",
+  "version": "0.1.0",
+  "author": "bespoked",
+  "license": "https://github.com/Bespok3d/u1-base/blob/dev/u1-base-resonance-tester/doc/LICENSE",
+  "description": "Part of the U1 Base Layer. It brings the printer's resonance measurement up to date with newer Klipper code, so input shaper calibration measures what the printer really does.\n\nWhat changes:\n• TEST_RESONANCES can use an accelerometer other than the stock one, and its acceleration per hertz can be set from the command.\n• A gentler sweeping vibrations test runs alongside the pulse test.\n• The sweep uses the frequency range the printer is set up for instead of a fixed one.\n\nInstall this because a plugin you want asks for it. Under the hood it edits Klipper's own program files on the printer. Uninstalling puts the originals back, and it re-applies itself after a firmware update. Snapmaker U1 only.",
+  "tagline": "Newer Klipper resonance measurement, for more accurate input shaper calibration.",
+  "category": "tuning",
+  "channel": "stable",
+  "printer_specific": true,
+  "changelog": "doc/CHANGELOG.md",
+  "published_at": "2026-08-24",
+  "updated_at": "2026-08-24",
+  "source": "https://github.com/Bespok3d/u1-base",
+  "homepage": null,
+  "publisher": "PLACEHOLDER",
+  "min_daemon_version": "0.14.2",
+  "provides": [
+    {
+      "service": "u1-base-resonance-tester"
+    }
+  ],
+  "require": [
+    {
+      "service": "migrate-patch",
+      "cardinality": "one"
+    }
+  ],
+  "conflicts": [],
+  "requires": {
+    "capabilities": [
+      "klipper-generic"
+    ],
+    "variables": []
+  },
+  "permissions": [
+    "klipper-source",
+    "restart"
+  ],
+  "install": {
+    "instrument": [
+      {
+        "class": "klipper-source",
+        "name": "extras/resonance_tester.py",
+        "variants": [
+          {
+            "when": {
+              "fw_min": "1.3.0"
+            },
+            "diff": "files/patches/01_resonance_chip_fix.patch"
+          }
+        ]
+      },
+      {
+        "class": "klipper-source",
+        "name": "extras/resonance_tester.py",
+        "variants": [
+          {
+            "when": {
+              "fw_min": "1.3.0"
+            },
+            "diff": "files/patches/04a_resonance_sweeping.patch"
+          }
+        ]
+      },
+      {
+        "class": "klipper-source",
+        "name": "extras/resonance_tester.py",
+        "variants": [
+          {
+            "when": {
+              "fw_min": "1.3.0"
+            },
+            "diff": "files/patches/06_resonance_snapmaker_fix.patch"
+          }
+        ]
+      }
+    ],
+    "restart": [
+      "klipper"
+    ]
+  },
+  "conflict_resolutions": [],
+  "files": [],
+  "attributions": "# Attributions - u1-base-resonance-tester\n\n**Plugin author:** MRX8024, Dmitry Butyugin and Kevin O'Connor (upstream Klipper commits) and paxx12 (Extended Firmware overlay `11-patch-klipper`), packaged by Bespok3d\n\nUpstream Klipper resonance measurement fixes the stock firmware predates, plus one Snapmaker specific fixup.\n\n| Upstream project | Author | Licence | Needed at runtime | Code ships in this package |\n| --- | --- | --- | --- | --- |\n| Klipper | Kevin O'Connor and the Klipper contributors | GPL-3.0 | yes | yes |\n| resonance_tester chip selection and accel_per_hz | MRX8024 | GPL-3.0 | yes | yes |\n| resonance_tester sweeping vibrations test | Dmitry Butyugin | GPL-3.0 | yes | yes |\n| Extended Firmware overlay `11-patch-klipper` | paxx12 | GPL-3.0 | no | yes |\n\nThese fragments come from the Extended Firmware overlay `11-patch-klipper`, GPL-3.0-only, and stay\nunder that licence. The licence text and the provenance note are in `vendor/klipper-motion-patches/`\nat the root of this repository. They were carried here unchanged from the `klipper-motion` plugin,\nwhich used to apply them itself.\n\nUpstream: https://github.com/Klipper3d/klipper\n\n"
+}

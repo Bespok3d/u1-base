@@ -1,0 +1,63 @@
+{
+  "name": "u1-base-shaper-calibrate",
+  "title": "U1 Base: shaper calibrate",
+  "version": "0.1.0",
+  "author": "bespoked",
+  "license": "https://github.com/Bespok3d/u1-base/blob/dev/u1-base-shaper-calibrate/doc/LICENSE",
+  "description": "Part of the U1 Base Layer. It updates the printer's input shaper calculation so very low frequency noise in a measurement no longer skews the result.\n\nWhat changes:\n• Frequencies below the useful range are damped before the shaper is chosen, so calibration picks a shaper that matches how the printer really moves.\n\nInstall this because a plugin you want asks for it. Under the hood it edits Klipper's own program files on the printer. Uninstalling puts the originals back, and it re-applies itself after a firmware update. Snapmaker U1 only.",
+  "tagline": "Newer Klipper input shaper calculation, so calibration is not skewed by low frequency noise.",
+  "category": "tuning",
+  "channel": "stable",
+  "printer_specific": true,
+  "changelog": "doc/CHANGELOG.md",
+  "published_at": "2026-08-24",
+  "updated_at": "2026-08-24",
+  "source": "https://github.com/Bespok3d/u1-base",
+  "homepage": null,
+  "publisher": "PLACEHOLDER",
+  "min_daemon_version": "0.14.2",
+  "provides": [
+    {
+      "service": "u1-base-shaper-calibrate"
+    }
+  ],
+  "require": [
+    {
+      "service": "migrate-patch",
+      "cardinality": "one"
+    }
+  ],
+  "conflicts": [],
+  "requires": {
+    "capabilities": [
+      "klipper-generic"
+    ],
+    "variables": []
+  },
+  "permissions": [
+    "klipper-source",
+    "restart"
+  ],
+  "install": {
+    "instrument": [
+      {
+        "class": "klipper-source",
+        "name": "extras/shaper_calibrate.py",
+        "variants": [
+          {
+            "when": {
+              "fw_min": "1.3.0"
+            },
+            "diff": "files/patches/04b_shaper_calibrate.patch"
+          }
+        ]
+      }
+    ],
+    "restart": [
+      "klipper"
+    ]
+  },
+  "conflict_resolutions": [],
+  "files": [],
+  "attributions": "# Attributions - u1-base-shaper-calibrate\n\n**Plugin author:** Dmitry Butyugin (upstream Klipper commit) and paxx12 (Extended Firmware overlay `11-patch-klipper`), packaged by Bespok3d\n\nAn upstream Klipper input shaper fix the stock firmware predates.\n\n| Upstream project | Author | Licence | Needed at runtime | Code ships in this package |\n| --- | --- | --- | --- | --- |\n| Klipper | Kevin O'Connor and the Klipper contributors | GPL-3.0 | yes | yes |\n| shaper_calibrate low frequency damping | Dmitry Butyugin | GPL-3.0 | yes | yes |\n| Extended Firmware overlay `11-patch-klipper` | paxx12 | GPL-3.0 | no | yes |\n\nThese fragments come from the Extended Firmware overlay `11-patch-klipper`, GPL-3.0-only, and stay\nunder that licence. The licence text and the provenance note are in `vendor/klipper-motion-patches/`\nat the root of this repository. They were carried here unchanged from the `klipper-motion` plugin,\nwhich used to apply them itself.\n\nUpstream: https://github.com/Klipper3d/klipper\n\n"
+}

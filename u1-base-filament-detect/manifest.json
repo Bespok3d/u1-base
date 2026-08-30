@@ -1,0 +1,69 @@
+{
+  "name": "u1-base-filament-detect",
+  "title": "U1 Base: filament detect",
+  "version": "0.1.0",
+  "author": "bespoked",
+  "license": "https://github.com/Bespok3d/u1-base/blob/dev/u1-base-filament-detect/doc/LICENSE",
+  "description": "Part of the U1 Base Layer. On its own it changes nothing you can see: it opens the printer's filament detection to plugins so that other plugins can use it.\n\nWhat it opens:\n• A plugin can register a reader for a spool tag the stock firmware does not know, so its own tags fill in the filament details instead of being ignored.\n• A plugin can ask how many filament channels the printer has, and can set the filament details for one of them.\n\nWith no plugin registered, filament detection behaves exactly as it does today. Install this because a plugin you want asks for it. Under the hood it edits Klipper's own program files on the printer. Uninstalling puts the originals back, and it re-applies itself after a firmware update. Snapmaker U1 only.",
+  "tagline": "Opens the printer's filament detection to plugins. Alone it changes nothing.",
+  "category": "tuning",
+  "channel": "stable",
+  "printer_specific": true,
+  "changelog": "doc/CHANGELOG.md",
+  "published_at": "2026-08-22",
+  "updated_at": "2026-08-22",
+  "source": "https://github.com/Bespok3d/u1-base",
+  "homepage": null,
+  "publisher": "PLACEHOLDER",
+  "min_daemon_version": "0.14.2",
+  "provides": [
+    {
+      "service": "u1-base-filament-detect"
+    }
+  ],
+  "require": [
+    {
+      "service": "migrate-patch",
+      "cardinality": "one"
+    }
+  ],
+  "conflicts": [],
+  "requires": {
+    "capabilities": [
+      "klipper-generic"
+    ],
+    "variables": []
+  },
+  "permissions": [
+    "klipper-source",
+    "restart"
+  ],
+  "install": {
+    "instrument": [
+      {
+        "class": "klipper-source",
+        "name": "extras/filament_detect.py",
+        "variants": [
+          {
+            "when": {
+              "fw_max": "1.4.0.244"
+            },
+            "diff": "files/patches/filament_detect-v1.3.patch"
+          },
+          {
+            "when": {
+              "fw_min": "1.3.0"
+            },
+            "diff": "files/patches/filament_detect-v1.4.246.patch"
+          }
+        ]
+      }
+    ],
+    "restart": [
+      "klipper"
+    ]
+  },
+  "conflict_resolutions": [],
+  "files": [],
+  "attributions": "# Attributions - u1-base-filament-detect\n\n**Plugin author:** Bespok3d\n\nThe patch in this package is the Bespok3d project's own work. It is applied to Snapmaker's Klipper\nfork, which is GPL-3.0, so the patch is GPL-3.0-only as well.\n\n| Upstream project | Author | Licence | Needed at runtime | Code ships in this package |\n| --- | --- | --- | --- | --- |\n| Snapmaker's Klipper fork | Snapmaker and the Klipper contributors | GPL-3.0 | yes | no |\n"
+}

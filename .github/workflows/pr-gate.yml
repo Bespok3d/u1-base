@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: Copyright (C) 2026 unlucio and the Bespok3d contributors
+# SPDX-License-Identifier: GPL-3.0-only
+name: pr-gate
+
+# Every pull request runs this repo's own check suite (scripts/check.sh) plus the shared em-dash and
+# workflow-pinning guards. Those guards live in lib_bespok3d, mounted here as a git submodule, so the
+# checkout must fetch it.
+#
+# lib_bespok3d is public, so the submodule fetch needs no secret. The submodule URL in .gitmodules is
+# relative, so in CI it resolves against this repo's HTTPS origin. The main checkout keeps
+# persist-credentials off, so GITHUB_TOKEN is not left in git config for the fetch to reuse.
+#
+# This is a check-only run: it never builds, packs, signs or publishes, so no signing key is in scope.
+# It holds no secret at all, which is what lets a pull request from a fork pass it. It is deliberately
+# NOT named pr-build.yml: that name is reserved for a b3-builder preview build, which the pinning guard
+# forbids from holding any secret at all.
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+          persist-credentials: false
+
+      - name: Fetch the shared-tooling submodule
+        run: git submodule update --init --recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # check.sh runs the per-file licence check through `reuse`, which is not on the runner image.
+      # Without it the check reports itself as skipped, so a file naming a licence whose text is
+      # missing from LICENSES/ would reach main unnoticed. Installed with pip rather than through a
+      # marketplace action, so the workflow-pinning guard has nothing new to pin. The
+      # charset-normalizer extra is not optional: reuse aborts on start without an encoding backend.
+      - name: Install the REUSE licence linter
+        run: pip install 'reuse[charset-normalizer]'
+
+      - name: Repo gate (shared detectors + check suite)
+        run: bash scripts/check.sh

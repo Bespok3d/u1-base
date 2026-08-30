@@ -1,0 +1,58 @@
+version = 1
+
+# This repo is GPL-3.0-only as a whole. Its own work has Extended Firmware lineage, which is
+# GPL-3.0-only, and the rsync binary it ships grants GPL-3.0-or-later, which permits the repo's
+# more restrictive suffix.
+#
+# Every file tracked here is the project's own work, except the motion patches named in the second
+# block below. `precedence = "aggregate"` means a file that carries its own SPDX header keeps it, and
+# this block only fills in the ones that do not, which is the documentation, the templates, the
+# manifests and the plugin payload trees.
+#
+# The LICENSES directory also holds the texts for the third-party code that the BUILT packages
+# convey but that is not committed here: the rsync and curl binaries that `system-utils/toolchain/`
+# compiles, the prometheus-klipper-exporter payload fetched from its manifest, and
+# the Python packages baked into `moonraker-notify` at build time. `reuse lint` reports those texts
+# as unused because no file in this repo carries their tag. They stay because the packages we
+# publish carry that code and must carry its licences.
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (C) 2026 unlucio and the Bespok3d contributors"
+SPDX-License-Identifier = "GPL-3.0-only"
+
+# The motion patches in these three plugins are not the project's own work. They came from paxx12's
+# Extended Firmware overlay `11-patch-klipper`, GPL-3.0-only, and carry upstream Klipper commits by
+# Kevin O'Connor, MRX8024 and Dmitry Butyugin. vendor/klipper-motion-patches/ records where they came
+# from and what, if anything, Bespok3d changed in them.
+
+[[annotations]]
+path = [
+  "u1-base-resonance-tester/files/patches/**",
+  "u1-base-toolhead/files/patches/**",
+  "u1-base-shaper-calibrate/files/patches/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = [
+  "Copyright (C) Kevin O'Connor and the Klipper contributors",
+  "Copyright (C) MRX8024",
+  "Copyright (C) Dmitry Butyugin",
+  "Copyright (C) paxx12",
+]
+SPDX-License-Identifier = "GPL-3.0-only"
+
+# The Snapmaker source under tests_support/snapmaker_source/ is not the project's own work either. It
+# is Snapmaker's own Klipper, one directory per firmware they have published, taken out of their own
+# firmware download and kept here so the fit proof can read the file a printer really runs. The
+# README beside it is this project's own writing and is covered by the block above, so only the
+# harvested source files are named here.
+
+[[annotations]]
+path = "tests_support/snapmaker_source/**/*.py"
+precedence = "override"
+SPDX-FileCopyrightText = [
+  "Copyright (C) Kevin O'Connor and the Klipper contributors",
+  "Copyright (C) Snapmaker",
+]
+SPDX-License-Identifier = "GPL-3.0-only"

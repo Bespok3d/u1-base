@@ -1,0 +1,60 @@
+From 352a5bac393d53f90e1496ed71330fdc37365a7e Mon Sep 17 00:00:00 2001
+From: Dmitry Butyugin <dmbutyugin@google.com>
+Date: Fri, 6 Dec 2024 11:54:26 +0900
+Subject: [PATCH] resonance_tester: Added a new sweeping_vibrations resonance
+ test method (#6723)
+
+This adds a new resonance test method that can help if a user has some mechanical problems with the printer.
+
+Signed-off-by: Dmitry Butyugin <dmbutyugin@google.com>
+
+Modified by the Bespok3d project on 2026-07-28: split out of 04_16b4b6b30.patch; this part carries only the klippy/toolhead.py change.
+---
+diff --git a/klippy/toolhead.py b/klippy/toolhead.py
+index 6f21e5a71..6cb130b13 100644
+--- a/klippy/toolhead.py
++++ b/klippy/toolhead.py
+@@ -50,6 +50,7 @@ class Move:
+         self.delta_v2 = 2.0 * move_d * self.accel
+         self.max_smoothed_v2 = 0.
+         self.smooth_delta_v2 = 2.0 * move_d * toolhead.max_accel_to_decel
++        self.next_junction_v2 = 999999999.9
+     def limit_speed(self, speed, accel):
+         speed2 = speed**2
+         if speed2 < self.max_cruise_v2:
+@@ -58,6 +59,8 @@ class Move:
+         self.accel = min(self.accel, accel)
+         self.delta_v2 = 2.0 * self.move_d * self.accel
+         self.smooth_delta_v2 = min(self.smooth_delta_v2, self.delta_v2)
++    def limit_next_junction_speed(self, speed):
++        self.next_junction_v2 = min(self.next_junction_v2, speed**2)
+     def move_error(self, msg="Move out of range"):
+         ep = self.end_pos
+         m = "%s: %.3f %.3f %.3f [%.3f]" % (msg, ep[0], ep[1], ep[2], ep[3])
+@@ -92,9 +95,9 @@ class Move:
+             return
+         # Allow extruder to calculate its maximum junction
+         extruder_v2 = self.toolhead.extruder.calc_junction(prev_move, self)
+-        max_start_v2 = min(
+-            extruder_v2, self.max_cruise_v2, prev_move.max_cruise_v2,
+-            prev_move.max_start_v2 + prev_move.delta_v2)
++        max_start_v2 = min(extruder_v2, self.max_cruise_v2,
++                           prev_move.max_cruise_v2, prev_move.next_junction_v2,
++                           prev_move.max_start_v2 + prev_move.delta_v2)
+         # Find max velocity using "approximated centripetal velocity"
+         axes_r = self.axes_r
+         prev_axes_r = prev_move.axes_r
+@@ -518,6 +521,10 @@ class ToolHead:
+         self.commanded_pos[:] = newpos
+         self.kin.set_position(newpos, homing_axes)
+         self.printer.send_event("toolhead:set_position")
++    def limit_next_junction_speed(self, speed):
++        last_move = self.lookahead.get_last()
++        if last_move is not None:
++            last_move.limit_next_junction_speed(speed)
+     def move(self, newpos, speed, line=None):
+         move = Move(self, self.commanded_pos, newpos, speed, line)
+         if not move.move_d:
+-- 
+2.47.3
+

@@ -1,0 +1,45 @@
+{
+  "kind": "collection",
+  "name": "u1-base",
+  "title": "U1 Base Layer",
+  "version": "0.1.0",
+  "author": "bespoked",
+  "description": "The doors other Bespok3d plugins knock on. On its own it changes nothing you can see: it opens the printer's print task settings, its RFID reader and its filament detection so that plugins can use them, and it does that in a way that lets several plugins use the same door at once instead of the last one winning.\n\nWhat it installs:\n• U1 Base: print task config, so a plugin can hold off the start-of-print pressure advance reset, and allow a preference to be changed mid print.\n• U1 Base: RFID reader, so a plugin can claim and read a card the stock reader does not understand.\n• U1 Base: filament detect, so a plugin can read its own spool tags and fill in the filament details.\n• U1 Base: resonance tester, so input shaper calibration measures what the printer really does.\n• U1 Base: toolhead, so fast moves stay accurate and a little quieter.\n• U1 Base: shaper calibrate, so low frequency noise no longer skews a calibration.\n\nInstall this because a plugin you want asks for it. Under the hood the three plugins edit Klipper's own program files on the printer. Uninstalling puts the originals back, and they re-apply themselves after a firmware update. Snapmaker U1 only.",
+  "tagline": "The doors other plugins knock on. Alone it changes nothing.",
+  "category": "tuning",
+  "channel": "stable",
+  "printer_specific": true,
+  "source": "https://github.com/Bespok3d/u1-base",
+  "publisher": "PLACEHOLDER",
+  "published_at": "2026-08-22",
+  "updated_at": "2026-08-24",
+  "changelog": "doc/CHANGELOG.md",
+  "members": [
+    {
+      "id": "u1-base-print-task-config",
+      "version": ">=0.1.0"
+    },
+    {
+      "id": "u1-base-fm175xx-reader",
+      "version": ">=0.1.0"
+    },
+    {
+      "id": "u1-base-filament-detect",
+      "version": ">=0.1.0"
+    },
+    {
+      "id": "u1-base-resonance-tester",
+      "version": ">=0.1.0"
+    },
+    {
+      "id": "u1-base-toolhead",
+      "version": ">=0.1.0"
+    },
+    {
+      "id": "u1-base-shaper-calibrate",
+      "version": ">=0.1.0"
+    }
+  ],
+  "license": "https://github.com/Bespok3d/u1-base/blob/dev/doc/LICENSE",
+  "attributions": ""
+}

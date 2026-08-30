@@ -1,0 +1,3 @@
+[submodule "lib_bespok3d"]
+	path = lib_bespok3d
+	url = ../lib_bespok3d.git

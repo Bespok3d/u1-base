@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: Copyright (C) 2026 unlucio and the Bespok3d contributors
+# SPDX-License-Identifier: GPL-3.0-only
+name: build-and-release
+
+# Build, test, pack, release, index, and register every plugin in this repo through the one reusable
+# Bespok3d build Action (b3-builder). This repo no longer carries its own build/pack/atom/list scripts in
+# CI: the Action wraps the whole pipeline, so the only thing here is who this publisher is (org identity
+# via the Action inputs) and the token to register the sub-list.
+on:
+  push:
+    tags:
+      # A release is published by a version tag and by nothing else. A push to main used to publish,
+      # which handed every enrolled printer a package built from whatever main happened to hold, work
+      # in progress included. scripts/tag_version_guard.sh refuses a tag naming a plugin this repo
+      # does not hold, or a number the plugin's manifest does not declare, so the tag cannot lie
+      # about what it publishes. The shared release-trigger detector fails the gate if a branch
+      # trigger is ever added back.
+      - 'plugin-*-v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create releases + commit index.json on this repo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so the index.json push can rebase on a concurrent update
+
+      # The Run workflow button stays usable: this step, not a job level `if`, is what decides.
+      # A manual run against a release tag republishes it; a manual run against a branch is refused
+      # here, loudly, instead of skipping the job and reporting success.
+      - name: Refuse a ref that is not a plugin release tag
+        run: sh scripts/tag_version_guard.sh "${{ github.ref_name }}"
+
+      - uses: Bespok3d/b3-builder@5abdeb52902b6096c59134afcf52a479e6588e71  # main @ 2026-08-06
+        with:
+          unit: repo
+          # Per-repo Actions secret today (GitHub Free cannot org-secret private repos); becomes ONE org
+          # secret every repo inherits when the repos go public. See b3-builder README (secrets model).
+          signing-key: ${{ secrets.REGISTRY_SIGNING_KEY }}
+          bake: 'true'
+          atom-repo: ${{ github.repository }}
+          list-name: 'U1 Extras'
+          list-publisher: '679939555819fb5f6423dc68c4388e76bfa9b4e0'
+          list-ref-name: 'U1 Extras'
+          main-index-repo: Bespok3d/main-index
+          # Per-repo Actions secret today (GitHub Free cannot org-secret private repos); becomes ONE org
+          # secret every repo inherits when the repos go public. See b3-builder README (secrets model).
+          main-index-token: ${{ secrets.MAIN_INDEX_TOKEN }}
