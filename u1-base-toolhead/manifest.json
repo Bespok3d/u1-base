@@ -15,7 +15,7 @@
   "source": "https://github.com/Bespok3d/u1-base",
   "homepage": null,
   "publisher": "PLACEHOLDER",
-  "min_daemon_version": "0.14.2",
+  "min_daemon_version": "0.14.0",
   "provides": [
     {
       "service": "u1-base-toolhead"
