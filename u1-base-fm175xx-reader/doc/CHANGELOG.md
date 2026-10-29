@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 (unreleased)
+## 0.1.1 - 2026-10-29
 
 - Fits Snapmaker firmware 2.1.0. That firmware added a fail-fast first scan to the reader driver,
   which moved the lines this plugin's doors sit beside, so 0.1.0 refused to install on it ("Hunk 2

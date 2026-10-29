@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 (unreleased)
+## 0.1.1 - 2026-10-29
 
 - Fits Snapmaker firmware 2.1.0. That firmware moved the startup spool check onto a timer, which
   added lines where this plugin's door sits, so 0.1.0 refused to install on it and every RFID plugin

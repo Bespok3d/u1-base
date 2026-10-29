@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 (unreleased)
+## 0.1.1 - 2026-10-29
 
 - Fits Snapmaker firmware 2.1.0. That firmware rewrote how `TEST_RESONANCES` picks its
   accelerometer and now resolves the chips at the start of every test, so 0.1.0 refused to install
