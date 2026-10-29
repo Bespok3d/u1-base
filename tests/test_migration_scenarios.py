@@ -48,10 +48,34 @@ FILES_THE_MOTION_PLUGIN_PATCHES = frozenset(
     {"extras/resonance_tester.py", "toolhead.py", "extras/shaper_calibrate.py"}
 )
 
+# Snapmaker's 2.1.0 moved the lines the released rfid and motion fragments sit on in these files, so
+# no printer on it is running them and there is nothing to migrate there: a printer that took 2.1.0
+# lost those patches with the update.
+FIRMWARE_FROM_2_1 = frozenset(
+    release for release in FIRMWARE_RELEASES if firmware_order(release, "2.1.0") >= 0
+)
+FILES_THOSE_PLUGINS_NO_LONGER_FIT_FROM_2_1 = frozenset(
+    {"extras/fm175xx_reader.py", "extras/filament_detect.py", "extras/resonance_tester.py"}
+)
+
+
+def firmware_a_field_printer_can_run_with(klipper_name: str) -> frozenset[str]:
+    """Every firmware on which the released plugin owning this file can have patched it."""
+    too_old = (
+        frozenset()
+        if klipper_name in FILES_THE_MOTION_PLUGIN_PATCHES
+        else FIRMWARE_OLDER_THAN_THOSE_PLUGINS_EVER_FITTED
+    )
+    too_new = (
+        FIRMWARE_FROM_2_1
+        if klipper_name in FILES_THOSE_PLUGINS_NO_LONGER_FIT_FROM_2_1
+        else frozenset()
+    )
+    return EVERY_FIRMWARE_A_PRINTER_RUNS - too_old - too_new
+
+
 PRINTERS_THE_FIELD_HOLDS = {
-    klipper_name: EVERY_FIRMWARE_A_PRINTER_RUNS
-    if klipper_name in FILES_THE_MOTION_PLUGIN_PATCHES
-    else EVERY_FIRMWARE_A_PRINTER_RUNS - FIRMWARE_OLDER_THAN_THOSE_PLUGINS_EVER_FITTED
+    klipper_name: firmware_a_field_printer_can_run_with(klipper_name)
     for klipper_name in BASE_PACKAGE_OWNING
 }
 

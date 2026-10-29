@@ -1,7 +1,7 @@
 {
   "name": "u1-base-filament-detect",
   "title": "U1 Base: filament detect",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "bespoked",
   "license": "https://github.com/Bespok3d/u1-base/blob/dev/u1-base-filament-detect/doc/LICENSE",
   "description": "Part of the U1 Base Layer. On its own it changes nothing you can see: it opens the printer's filament detection to plugins so that other plugins can use it.\n\nWhat it opens:\n• A plugin can register a reader for a spool tag the stock firmware does not know, so its own tags fill in the filament details instead of being ignored.\n• A plugin can ask how many filament channels the printer has, and can set the filament details for one of them.\n\nWith no plugin registered, filament detection behaves exactly as it does today. Install this because a plugin you want asks for it. Under the hood it edits Klipper's own program files on the printer. Uninstalling puts the originals back, and it re-applies itself after a firmware update. Snapmaker U1 only.",
@@ -11,7 +11,7 @@
   "printer_specific": true,
   "changelog": "doc/CHANGELOG.md",
   "published_at": "2026-08-22",
-  "updated_at": "2026-08-22",
+  "updated_at": "2026-10-29",
   "source": "https://github.com/Bespok3d/u1-base",
   "homepage": null,
   "publisher": "PLACEHOLDER",
@@ -44,6 +44,12 @@
         "class": "klipper-source",
         "name": "extras/filament_detect.py",
         "variants": [
+          {
+            "when": {
+              "fw_min": "2.1.0"
+            },
+            "diff": "files/patches/filament_detect-v2.1.patch"
+          },
           {
             "when": {
               "fw_max": "1.4.0.244"
