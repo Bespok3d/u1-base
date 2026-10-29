@@ -1,0 +1,38 @@
+Bespok3d variant for Snapmaker firmware 2.1.0 and later: only the ACCEL_PER_HZ hunk of the
+upstream commit below. From 2.1.0 Snapmaker's own _parse_chips already looks a chip up by its
+exact name first (then with the adxl345 prefix), resolves its accelerometer wrapper and reports
+an unknown chip, so the upstream lookup hunk has nothing left to add and is left out.
+
+From 8543899d3c9d84923a748056fa8d17f37ffbdbb7 Mon Sep 17 00:00:00 2001
+From: MRX8024 <57844100+MRX8024@users.noreply.github.com>
+Date: Wed, 13 Nov 2024 02:55:32 +0200
+Subject: [PATCH] resonance_tester: Fix chips selection, add accel_per_hz
+ selection (#6726)
+
+Corrected issue where accelerometer names were incorrectly prefixed
+with "adxl345", preventing the selection of other chip types when running TEST_RESONANCES.
+
+Implemented support for selecting the `accel_per_hz` parameter when running TEST_RESONANCES.
+
+docs: Update TEST_RESONANCES + SHAPER_CALIBRATE with missing parameters and bracket corrections
+
+Signed-off-by: Maksim Bolgov <maksim8024@gmail.com>
+---
+ klippy/extras/resonance_tester.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/klippy/extras/resonance_tester.py b/klippy/extras/resonance_tester.py
+--- a/klippy/extras/resonance_tester.py
++++ b/klippy/extras/resonance_tester.py
+@@ -70,6 +70,8 @@ class VibrationPulseTest:
+         self.freq_start = gcmd.get_float("FREQ_START", self.min_freq, minval=1.)
+         self.freq_end = gcmd.get_float("FREQ_END", self.max_freq,
+                                        minval=self.freq_start, maxval=300.)
++        self.accel_per_hz = gcmd.get_float("ACCEL_PER_HZ",
++                                           self.accel_per_hz, above=0.)
+         self.hz_per_sec = gcmd.get_float("HZ_PER_SEC", self.hz_per_sec,
+                                          above=0., maxval=2.)
+     def run_test(self, axis, gcmd):
+-- 
+2.47.3
+
