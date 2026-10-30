@@ -28,6 +28,8 @@ present.
 | 1.5.1.2 | Snapmaker's own firmware download, linked from their release notes |
 | 1.5.2.13 | Snapmaker's own firmware download, linked from their release notes |
 | 1.6.0.267 | read off a U1 running it, because Snapmaker's release notes list the 1.6.0 page but serve no download for it yet |
+| 2.0.0.205 | extracted from Snapmaker's own upgrade image `U1_2.0.0.205_20260914173503_upgrade.bin`, which the maintainer had kept: the root filesystem inside it read with a squashfs reader. `fm175xx_reader.py` and `filament_detect.py` already ship with CRLF line endings in this build |
+| 2.1.0.157 | read off a U1 running it (the 2.1.0 beta, `2.1.0.157_20261028045538`), copied from the read-only firmware layer `/overlay`, because Snapmaker serves no download for the beta. `fm175xx_reader.py` and `filament_detect.py` ship with CRLF line endings in this build; they are kept byte for byte, and `firmware_stock` strips the CRs the way the printer does |
 
 Snapmaker's GitHub mirrors (`Snapmaker/u1-klipper`, `Snapmaker/u1-moonraker`) would be the obvious
 source, but they are published late and skip releases, so they cannot be what the proof stands on.

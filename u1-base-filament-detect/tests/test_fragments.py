@@ -5,19 +5,38 @@ and the strictness is what a printer applies, both of them from `firmware_stock`
 from pathlib import Path
 
 import pytest
-from firmware_stock import FIRMWARE_RELEASES, apply_fragments, fitting_releases, stock_text
+from firmware_stock import (
+    FIRMWARE_RELEASES,
+    apply_fragments,
+    firmware_order,
+    fitting_releases,
+    stock_text,
+)
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 PATCH_DIR = PLUGIN_ROOT / "files" / "patches"
 KLIPPER_PATH = "klippy/extras/filament_detect.py"
 
-# Snapmaker rewrote this driver in 1.4.0 and every firmware since has taken the same
-# fragment, so the newer one is named as everything but the firmware that came before it.
+# Snapmaker rewrote this driver in 1.4.0 and every firmware up to 2.1.0 took the same fragment, so
+# that one is named as everything between the firmware before the rewrite and the 2.1.0 floor.
 FIRMWARE_BEFORE_THE_REWRITE = "1.3.0.168"
+
+# 2.1.0 moved the startup spool check onto a timer. The state it adds in `__init__` sits among the
+# lines the parser registry is added beside, so 2.1.0 and every later firmware take their own
+# fragment. This is the floor the variant table names for it.
+STARTUP_DETECT_TIMER_FLOOR = "2.1.0"
+FIRMWARE_WITH_STARTUP_DETECT_TIMER = {
+    release
+    for release in FIRMWARE_RELEASES
+    if firmware_order(release, STARTUP_DETECT_TIMER_FLOOR) >= 0
+}
 
 FRAGMENT_FITS = {
     "filament_detect-v1.3.patch": {FIRMWARE_BEFORE_THE_REWRITE},
-    "filament_detect-v1.4.246.patch": set(FIRMWARE_RELEASES) - {FIRMWARE_BEFORE_THE_REWRITE},
+    "filament_detect-v1.4.246.patch": set(FIRMWARE_RELEASES)
+    - {FIRMWARE_BEFORE_THE_REWRITE}
+    - FIRMWARE_WITH_STARTUP_DETECT_TIMER,
+    "filament_detect-v2.1.patch": FIRMWARE_WITH_STARTUP_DETECT_TIMER,
 }
 
 DOORS = (

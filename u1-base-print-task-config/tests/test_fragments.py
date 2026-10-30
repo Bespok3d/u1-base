@@ -20,7 +20,9 @@ FRAGMENT_FITS = {
     "print_task_config-v1.3.patch": {"1.3.0.168"},
     "print_task_config-v1.4.patch": {"1.4.0.246"},
     "print_task_config-v1.4.1.patch": {"1.4.1.6"},
-    "print_task_config-v1.6.patch": {"1.5.0.344", "1.5.1.2", "1.5.2.13", "1.6.0.267"},
+    "print_task_config-v1.6.patch": {
+        "1.5.0.344", "1.5.1.2", "1.5.2.13", "1.6.0.267", "2.0.0.205", "2.1.0.157"
+    },
 }
 
 # Snapmaker rewrote the mid print check in 1.4.0 and has not touched it since, so one line stands
