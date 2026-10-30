@@ -31,5 +31,4 @@ there. Nothing to configure.
 
 - Patches `/home/lava/klipper/klippy/extras/filament_detect.py`; reverted on uninstall and
   re-applied after an OTA firmware update.
-- Snapmaker U1. Fits firmware 1.3.0 to 1.6.0, and the 2.1.0 beta (build 157). Firmware 2.0.0 is
-  not proved yet.
+- Snapmaker U1. Fits firmware 1.3.0 to 1.6.0, 2.0.0, and the 2.1.0 beta (build 157).

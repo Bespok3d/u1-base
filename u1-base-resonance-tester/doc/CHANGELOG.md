@@ -9,7 +9,8 @@
   exact name, falls back to the `adxl345` prefix, understands the new accelerometer wrapper and
   reports an unknown chip. `ACCEL_PER_HZ`, the sweeping vibrations test and the frequency range fix
   are applied exactly as before.
-- Proved against the 2.1.0 beta (build 157), copied off a U1 running it.
+- Proved against the 2.1.0 beta (build 157), copied off a U1 running it, and against 2.0.0
+  (build 205), extracted from Snapmaker's upgrade image.
 - Now requires U1 Base: toolhead. The sweeping vibrations test calls a toolhead method that only
   that package adds, so with this package installed alone `TEST_RESONANCES` stopped on its first
   move with an internal error and shut the printer down, on every firmware. The two used to be
