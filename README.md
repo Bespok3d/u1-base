@@ -44,6 +44,9 @@ u1-base/
     manifest.json
     files/               # the plugin's diff(s): unified diffs against Snapmaker's own source
     doc/README.md        # rendered in-app; not deployed
+  u1-base/              # the "U1 Base Layer" collection (kind: collection), a dir like any plugin
+    manifest.json        # so the builder discovers and publishes it
+    doc/
   .github/workflows/release.yml
   index.json             # the published sub-list (committed; referenced by main-index lists[])
   dist/                  # build output (gitignored)
