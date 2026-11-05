@@ -12,7 +12,7 @@
   "source": "https://github.com/Bespok3d/u1-base",
   "publisher": "PLACEHOLDER",
   "published_at": "2026-08-22",
-  "updated_at": "2026-10-29",
+  "updated_at": "2026-11-05",
   "changelog": "doc/CHANGELOG.md",
   "members": [
     {
@@ -40,6 +40,6 @@
       "version": ">=0.1.0"
     }
   ],
-  "license": "https://github.com/Bespok3d/u1-base/blob/dev/doc/LICENSE",
+  "license": "https://github.com/Bespok3d/u1-base/blob/dev/u1-base/doc/LICENSE",
   "attributions": ""
 }

@@ -44,7 +44,7 @@ jobs:
           RELEASE_TAG: ${{ inputs.prospective-tag || github.ref_name }}
         run: sh scripts/tag_version_guard.sh "$RELEASE_TAG"
 
-      - uses: Bespok3d/b3-builder@5ac544b30634961cbad39659ebbb99172de68c64
+      - uses: Bespok3d/b3-builder@539a7ac52398e67f13d619300f1dcc71d0111be0
         with:
           managed-release: 'true'
           release-tag: ${{ inputs.prospective-tag }}
